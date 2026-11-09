@@ -51,59 +51,6 @@ def view_shifts():
         print(f"Total Sales: ${data['total_sales']:.2f}")
         print("-----------------------------")
 
-# get a whole number from user
-
-def get_integer(message):
-    while True:
-        try:
-            number = int(input(message))
-
-            if number >= 0:
-                return number
-            else:
-                print("Please enter a number that is not negative.")
-
-        except ValueError:
-            print("Invalid input. Please enter a whole number.")
-
-
-# get valid money input from user
-def get_float(prompt):
-    while True:
-        try:
-            number = float(input(prompt))
-
-            if number >= 0:
-                return number
-            else:
-                print("Please enter an amount that is not negative.")
-
-        except ValueError:
-            print("Invalid input. Please enter a number.")
-
-# update shift or add new shift
-def record_shift():
-    print("========== Record Shift =========")
-   
-    date = input("Enter the date of the shift (YYYY-MM-DD): ")
-
-    if date in shifts:
-        print("This shift already exists. Updating shift information:")
-    else:
-        print("Adding new shift!")
-
-        season = input("Enter the season (Spring, Summer, Fall, Winter): ")
-        day = input("Enter the day of the week: ")
-
-        customers = get_integer("Enter the number of customers: ")
-        total_sales = get_float("Enter the total sales amount: ")
-
-        shifts[date] = {
-            "season": season,
-            "day": day,
-            "customers": customers,
-            "total_sales": total_sales
-        }
 
 # menu that stays open until the user chooses to exit
 while True:
