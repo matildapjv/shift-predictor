@@ -1,13 +1,10 @@
 #
 #
-#
-#
-# also incprperate if its raining, cloudy, sunny, or snowing.
-
 
 import csv
-
+#----------------------------------------------
 # Loads the shift dictionary from the CSV file.
+#----------------------------------------------
 def load_shifts():
     shifts = {}
 
@@ -28,7 +25,10 @@ def load_shifts():
 
     return shifts
 
+#----------------------------------------------
 # Saves the shift dictionary to the CSV file.
+#----------------------------------------------
+
 def save_shifts(shifts):
     with open("shifts.csv", "w", newline="") as file:
         fieldnames = ["date", "season", "day", "customers", "total_sales"]
@@ -45,19 +45,62 @@ def save_shifts(shifts):
                 "total_sales": details["total_sales"]
             })
 
-## show the menu options 
+#----------------------------------------------
+# Loads rhe transaction list from its CSV file
+#----------------------------------------------
+def load_transactions():
+    transactions = []
+
+    try:
+        with open("transactions.csv", "r", newline="") as file:
+            reader = csv.DictReader(file)
+
+            for row in reader:
+                transactions.append({
+                    "date": row["date"],
+                    "season": row["season"],
+                    "day": row["day"],
+                    "customers": int(row["customers"]),
+                    "total_sales": float(row["total_sales"]),
+                })
+
+    except FileNotFoundError:
+        print("No transaction file found. Starting with an empty transaction history.")
+
+    return transactions
+
+#----------------------------------------------
+# Saves the transaction list to its CSV file.
+#----------------------------------------------
+
+def save_transactions(transactions):
+    with open("transactions.csv", "w", newline="") as file:
+        fieldnames = ["date", "season", "day", "customers", "total_sales"]
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+        writer.writeheader()
+
+        for transaction in transactions:
+            writer.writerow(transaction)
+
+#----------------------------------------------
+# show the menu options 
+#----------------------------------------------
 
 def show_menu():
     print("========== Shift Predictor =========")
-    print("1. Predict Shift Busyness")
+    print("1. Record a Shift")
     print("2. View Shift History")
-    print("3. Record shift History")
-    print("4. Run Customer Simulation")
-    print("5. Run Gratuity Simulation")
-    print("6. View Charts")
-    print("7. Exit")    
+    print("3. View Transactions")
+    print("4. Predict Shift Busyness")
+    print("5. Estimate Tips")
+    print("6. Run Customer Simulation")
+    print("7. View Charts")
+    print("8. Save and Exit")    
 
-# display every recorded shift and its information
+#----------------------------------------------
+# display every recorded shift in the dictionary
+#----------------------------------------------
 def view_shifts(shifts):
     print("========== Shift History =========")
     for date, data in shifts.items():
@@ -68,7 +111,27 @@ def view_shifts(shifts):
         print(f"Total Sales: ${data['total_sales']:.2f}")
         print("-----------------------------")
 
+#----------------------------------------------
+#Display every recorded transaction in the list
+#----------------------------------------------
+
+def view_transactions(transactions):
+    print("========== Transaction History =========")
+
+    if len(transactions) == 0:
+        print("No transactions recorded yet.")
+    else:
+        for transaction in transactions:
+            print(f"Date: {transaction['date']}")
+            print(f"Season: {transaction['season']}")
+            print(f"Day: {transaction['day']}")
+            print(f"Customers: {transaction['customers']}")
+            print(f"Total Sales: ${transaction['total_sales']:.2f}")
+            print("-----------------------------")
+
+#----------------------------------------------
 # get a whole number from user
+#----------------------------------------------
 
 def get_integer(message):
     while True:
@@ -83,8 +146,10 @@ def get_integer(message):
         except ValueError:
             print("Invalid input. Please enter a whole number.")
 
+#----------------------------------------------
+#  valid money input
+#----------------------------------------------
 
-# get valid money input from user
 def get_float(prompt):
     while True:
         try:
@@ -98,51 +163,98 @@ def get_float(prompt):
         except ValueError:
             print("Invalid input. Please enter a number.")
 
-# update shift or add new shift
+#----------------------------------------------
+# valid season input
+#----------------------------------------------
+def get_season():
+    while True:
+        season = input("Enter the season (Spring, Summer, Fall, Winter): ")
+        season = season.capitalize()
+
+        if season in ["Spring", "Summer", "Fall", "Winter"]:
+            return season
+        else:
+            print("Invalid season. Please enter Spring, Summer, Fall, or Winter.")
+
+#----------------------------------------------
+# valid day input
+#----------------------------------------------
+def get_day():
+    while True:
+        day = input("Enter the day of the week: ")
+        day = day.capitalize()
+
+        if day in ["Monday", "Tuesday", "Wednesday", "Thursday",
+                   "Friday", "Saturday", "Sunday"]:
+            return day
+        else:
+            print("Invalid day. Please enter a day of the week.")
+
+#----------------------------------------------
+# record a shift as a transaction and updates the shift dictionary
+#----------------------------------------------
+
 def record_shift():
     print("========== Record Shift =========")
    
-    date = input("Enter the date of the shift (YYYY-MM-DD): ")
+    date = input("Enter the shift date (YYYY-MM-DD): ")
 
-    if date in shifts:
-        print("This shift already exists. Updating shift information:")
-    else:
-        print("Adding new shift!")
+    while date.strip() == "":
+        print("The date cannot be blank.")
+        date = input("Enter the shift date (YYYY-MM-DD): ")
 
-        season = input("Enter the season (Spring, Summer, Fall, Winter): ")
-        day = input("Enter the day of the week: ")
+    season = get_season()
+    day = get_day()
+    customers = get_integer("Enter the number of customers: ")
+    total_sales = get_float("Enter the total sales: $")
 
-        customers = get_integer("Enter the number of customers: ")
-        total_sales = get_float("Enter the total sales amount: ")
+    transaction = {
+        "date": date,
+        "season": season,
+        "day": day,
+        "customers": customers,
+        "total_sales": total_sales
+    }
 
-        shifts[date] = {
-            "season": season,
-            "day": day,
-            "customers": customers,
-            "total_sales": total_sales
-        }
+    transactions.append(transaction)
 
-# menu that stays open until the user chooses to exit
+    shifts[date] = {
+        "season": season,
+        "day": day,
+        "customers": customers,
+        "total_sales": total_sales
+    }
+
+    print("Shift transaction recorded successfully!")
+
+#----------------------------------------------
+#loads both of the CSV files when the program starts
+#----------------------------------------------
 shifts = load_shifts()
+transactions = load_transactions()
+
+#----------------------------------------------
+# menu that stays open until the user chooses to exit
+#----------------------------------------------
 
 while True:
     show_menu()
-    choice = input("Enter your choice (1-7): ")
+    choice = input("Please choose an option (1-8): ")
 
-    if choice == '1':
+    if choice == "1":
         record_shift()
-
-    elif choice == '2':
+    elif choice == "2":
         view_shifts(shifts)
-
-    elif choice in ['3', '4', '5','6']:
-        print(f"Coming soon!")   
-         
-    elif choice == "7":
-        print("Exiting... Thank you for using Shift Predictor!")
+    elif choice == "3":
+        view_transactions(transactions)
+    elif choice in ["4", "5", "6", "7"]:
+        print("Coming soon!")
+    elif choice == "8":
+        save_shifts(shifts)
+        save_transactions(transactions)
+        print("Your shift history and transactions have been saved!")
+        print("Thank you for using the Busy Shift Predictor!")
         break
-        
     else:
-        print("Invalid choice. Please enter a number from 1-6.")
-
+        print("Invalid choice. Please enter a number from 1-8.")
 
