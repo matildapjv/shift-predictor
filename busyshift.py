@@ -92,11 +92,12 @@ def show_menu():
     print("1. Record a Shift")
     print("2. View Shift History")
     print("3. View Transactions")
-    print("4. Predict Shift Busyness")
-    print("5. Estimate Tips")
-    print("6. Run Customer Simulation")
-    print("7. View Charts")
-    print("8. Save and Exit")    
+    print("4. Shift Report")
+    print("5. Predict Shift Busyness")
+    print("6. Estimate Tips")
+    print("7. Run Customer Simulation")
+    print("8. View Charts")
+    print("9. Save and Exit")    
 
 #----------------------------------------------
 # display every recorded shift in the dictionary
@@ -128,6 +129,73 @@ def view_transactions(transactions):
             print(f"Customers: {transaction['customers']}")
             print(f"Total Sales: ${transaction['total_sales']:.2f}")
             print("-----------------------------")
+
+#----------------------------------------------
+# Creates report summarizing the recorded shifts
+#----------------------------------------------
+def shift_report(transactions):
+    print("\n========== SHIFT REPORT ==========")
+
+    if len(transactions) == 0:
+        print("No transactions available to create a report.")
+        return
+
+    total_shifts = len(transactions)
+    total_customers = 0
+    total_sales = 0
+
+    sales_by_season = {}
+    customers_by_day = {}
+# totals customers and sales from each shift
+    for transaction in transactions:
+        total_customers += transaction["customers"]
+        total_sales += transaction["total_sales"]
+
+        season = transaction["season"]
+        day = transaction["day"]
+# sales --> season
+        if season in sales_by_season:
+            sales_by_season[season] += transaction["total_sales"]
+        else:
+            sales_by_season[season] = transaction["total_sales"]
+
+# customers --> correct day.
+        if day in customers_by_day:
+            customers_by_day[day] += transaction["customers"]
+        else:
+            customers_by_day[day] = transaction["customers"]
+
+    average_customers = total_customers / total_shifts
+    average_sales = total_sales / total_shifts
+
+# shift w/ most customers
+    busiest_shift = transactions[0]
+
+    for transaction in transactions:
+        if transaction["customers"] > busiest_shift["customers"]:
+            busiest_shift = transaction
+
+    print("Shifts recorded:", total_shifts)
+    print("Total customers:", total_customers)
+    print(f"Total sales: ${total_sales:.2f}")
+    print(f"Average customers per shift: {average_customers:.2f}")
+    print(f"Average sales per shift: ${average_sales:.2f}")
+
+    print("\nBusiest shift:")
+    print("Date:", busiest_shift["date"])
+    print("Customers:", busiest_shift["customers"])
+    print("Season:", busiest_shift["season"])
+    print("Day:", busiest_shift["day"])
+
+    print("\nSales by season:")
+
+    for season, sales in sales_by_season.items():
+        print(f"{season}: ${sales:.2f}")
+
+    print("\nCustomers by day:")
+
+    for day, customers in customers_by_day.items():
+        print(f"{day}: {customers}")
 
 #----------------------------------------------
 # get a whole number from user
@@ -247,14 +315,16 @@ while True:
         view_shifts(shifts)
     elif choice == "3":
         view_transactions(transactions)
-    elif choice in ["4", "5", "6", "7"]:
+    elif choice == "4":
+        shift_report(transactions)
+    elif choice in [" 5", "6", "7","8"]:
         print("Coming soon!")
-    elif choice == "8":
+    elif choice == "9":
         save_shifts(shifts)
         save_transactions(transactions)
         print("Your shift history and transactions have been saved!")
         print("Thank you for using the Busy Shift Predictor!")
         break
     else:
-        print("Invalid choice. Please enter a number from 1-8.")
+        print("Invalid choice. Please enter a number from 1-9.")
 
