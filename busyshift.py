@@ -2,6 +2,8 @@
 #
 
 import csv
+import matplotlib.pyplot as plt
+
 #----------------------------------------------
 # Loads the shift dictionary from the CSV file.
 #----------------------------------------------
@@ -198,6 +200,74 @@ def shift_report(transactions):
         print(f"{day}: {customers}")
 
 #----------------------------------------------
+# creates and saves two charts from the recorded shifts
+#----------------------------------------------
+def create_charts(transactions):
+    if len(transactions) == 0:
+        print("No transactions available to create charts.")
+        return
+
+    customers_by_day = {}
+    sales_by_season = {}
+
+    for transactions in transactions:
+        day = transactions["day"]
+        season = transactions["season"]
+
+        if day in customers_by_day:
+            customers_by_day[day] += transactions["customers"]
+        else:
+            customers_by_day[day] = transactions["customers"]
+
+        if season in sales_by_season:
+            sales_by_season[season] += transactions["total_sales"]
+        else:
+            sales_by_season[season] = transactions["total_sales"]
+
+    #days in cal order
+
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    day_names = []
+    customer_totals = []
+
+    for day in days:
+        if day in customers_by_day:
+            day_names.append(day)
+            customer_totals.append(customers_by_day[day])
+
+    #chart 1: customers by day of the week
+    plt.figure(figsize=(8, 5))
+    plt.bar(day_names, customer_totals, color='skyblue')
+    plt.title("Total Customers by Day of the Week")
+    plt.xlabel("Day of the Week")
+    plt.ylabel("Total Customers")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig("customers_by_day.png")
+    plt.show()
+
+    #seasons in cal order
+    seasons = ["Spring", "Summer", "Fall", "Winter"]
+    season_names = []
+    sales_totals = []
+
+    for season in seasons:
+        if season in sales_by_season:
+            season_names.append(season)
+            sales_totals.append(sales_by_season[season])
+
+#chart2: sales by season
+    plt.figure(figsize=(8, 5))
+    plt.plot(season_names, sales_totals, marker = 'o', color='lightcoral')
+    plt.title("Total Sales by Season")
+    plt.xlabel("Season")
+    plt.ylabel("Total Sales($)")
+    plt.tight_layout()
+    plt.savefig("sales_by_season.png")
+    plt.show()
+
+print("Charts have been saved successfully! ")
+#----------------------------------------------
 # get a whole number from user
 #----------------------------------------------
 
@@ -317,8 +387,10 @@ while True:
         view_transactions(transactions)
     elif choice == "4":
         shift_report(transactions)
-    elif choice in [" 5", "6", "7","8"]:
+    elif choice in [" 5", "6", "7"]:
         print("Coming soon!")
+    elif choice == "8":
+        create_charts(transactions)
     elif choice == "9":
         save_shifts(shifts)
         save_transactions(transactions)

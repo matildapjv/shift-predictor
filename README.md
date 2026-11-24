@@ -17,17 +17,27 @@ How busy is my upcoming shift likely to be, and how much should I expect to earn
 1. Record a Shift
 2. View Shift History
 3. View Transactions
-4. Predict Shift Busyness
-5. Estimate Tips
-6. Run Customer Simulation
-7. View Charts
-8. Save and Exit
+4. Shift Report
+5. Predict Shift Busyness
+6. Estimate Tips
+7. Run Customer Simulation
+8. View Charts
+9. Save and Exit
 
 ## Files
 - `main.py` - Runs the program and displays the menu.
 - `shifts.csv` - Stores the shift history dictionary.
 - `transactions.csv` - Stores individual shift transactions.
+- `customers_by_day.png` - Chart showing customers by day of the week
+- `sales_by_season.png` - Chart showinf total sales by season
 - `README.md` - Explains the project and how to use it.
+
+## Charts
+![Total customers by the day of the week](customers_by_day.png)
+This chart shows which days of the week have the most customers, helping me know which of my shifts are more likley to be busier than others.
+
+![Total salesby season](sales_by_season.png)
+This chart compares sales across season to help identify ehich seasons are the busyest ir most profitable.
 
 ## Author
 Matilda Pinjuv
