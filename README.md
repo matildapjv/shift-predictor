@@ -26,6 +26,8 @@ How busy is my upcoming shift likely to be, and how much should I expect to earn
 
 ## Files
 - `main.py` - Runs the program and displays the menu.
+- `shifts.py` - Loads and saves CSV data, displays shifts, records transactions, and validates input.
+- `reports.py` - Creates the shift report, calculates group totals, and creates charts.
 - `shifts.csv` - Stores the shift history dictionary.
 - `transactions.csv` - Stores individual shift transactions.
 - `customers_by_day.png` - Chart showing customers by day of the week
